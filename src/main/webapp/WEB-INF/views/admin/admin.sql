@@ -61,8 +61,12 @@ select mid 아이디,startDate 가입일, datediff(now(), startDate) as 지난�
 select mid,startDate, datediff(now(), startDate) as deleteDiff from member where userDel='OK';
 
 select * from board;
-select date_format(wDate, '%y-%m-%d') from board;	-- %y : 2자리 연도
-select date_format(wDate, '%Y-%m-%d') from board; -- %Y : 4자리 연도
-select date_format(wDate, '%Y-%M-%d') from board; -- %M : 월이 영어로
-select date_format(wDate, '%Y-%m-%d %p %h:%i') from board; -- %p : AM/PM, %h:12시간제
-select date_format(wDate, '%Y-%m-%d %H:%i') from board;	-- %H : 24시간제
+select date_format(wDate, '%y-%m-%d') from board;	/* %y : 2자리 연도 */
+select date_format(wDate, '%y/%m/%d') from board;
+select date_format(wDate, '%y년%m월%d일') from board;
+select date_format(wDate, '%Y-%m-%d') from board; /* %Y : 4자리 연도 */
+select date_format(wDate, '%Y-%m-%d %w') from board; /* %w : 요일(숫자: 월-1) */
+select date_format(wDate, '%Y-%m-%d %W') from board; /* %W : 요일(영어로) */
+select date_format(wDate, '%Y-%M-%d') from board; /* %M : 월이 영어로 */
+select date_format(wDate, '%Y-%m-%d %p %h:%i') from board; /* %p : AM/PM, %h:12시간제 */
+select date_format(wDate, '%Y-%m-%d %H:%i') from board;	/* %H : 24시간제 */
