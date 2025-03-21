@@ -29,5 +29,14 @@
     update board set readNum = readNum + 1 where idx = #{idx};
   </update>
   
+  <update id="setBoardUpdate">
+  	update board set title=#{vo.title}, content=#{vo.content}, hostIp=#{vo.hostIp}, openSw=#{vo.openSw}, wDate=now() where idx =#{vo.idx};
+  </update>
+  
+  
+  
+  <delete id="setboardDelete">
+  	delete from board where idx = #{idx};
+  </delete>
   
 </mapper>

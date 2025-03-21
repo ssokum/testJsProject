@@ -10,6 +10,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>boardContent.jsp</title>
   <jsp:include page="/WEB-INF/views/include/bs5.jsp" />
+  <script>
+    'use strict';
+    
+    function delCheck() {
+    	let ans = confirm("현재 게시글을 삭제 하시겠습니다.?");
+    	if(ans) location.href = "boardDelete?idx=${vo.idx}";
+    }
+  </script>
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
@@ -22,7 +30,7 @@
       <th class="table-secondary">글쓴이</th>
       <td>${vo.nickName}</td>
       <th class="table-secondary">글쓴날짜</th>
-      <td>${vo.WDate}</td>
+      <td>${fn:substring(vo.WDate,0,19)}</td>
     </tr>
     <tr>
       <th class="table-secondary">글조회수</th>
@@ -40,12 +48,14 @@
     </tr>
   </table>
   <div class="row">
-  	<div class="col"><input type="button" value="돌아가기" onclick="location.href='boardList'" class="btn btn-info"/></div>
-  	<c:if test="${sNickName == vo.nickName }">
-  		<div class="col text-end">
-  			<input type="button" value="수정" onclick="location.href='boardUpdate'" class="btn btn-warning"/>
-  			<input type="button" value="삭제" onclick="delCheck()" class="btn btn-danger"/>
-  		</div>
+  	<div class="col"><input type="button" value="돌아가기" onclick="location.href='boardList?pag=${pag}&pageSize=${pageSize}'" class="btn btn-info"/></div>
+  	<c:if test="${sNickName == vo.nickName || sLevel == 0}">
+	  	<div class="col text-end">
+	  	  <c:if test="${sNickName == vo.nickName}">
+			  	<input type="button" value="수정" onclick="location.href='boardUpdate?idx=${vo.idx}'" class="btn btn-warning"/>
+			  </c:if>
+			  <input type="button" value="삭제" onclick="delCheck()" class="btn btn-danger"/>
+	  	</div>
   	</c:if>
   </div> 
 </div>

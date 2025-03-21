@@ -5,7 +5,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>.jsp</title>
+    <title>boardInput.jsp</title>
+    <script src="${ctp}/ckeditor/ckeditor.js"></script>
     <jsp:include page="/WEB-INF/views/include/bs5.jsp" />
 </head>
 <body>
@@ -26,7 +27,15 @@
 			</tr>
 			<tr>
 				<th>글내용</th>
-				<td><textarea row="10" name="content" id="content" placeholder="글내용을 입력하세요" class="form-control" required></textarea></td>
+				<td><textarea row="10" name="content" id="CKEDITOR" placeholder="글내용을 입력하세요" class="form-control" required></textarea>
+						<script>
+							CKEDITOR.replace("content", {
+								height:450,
+								filebrowserUploadUrl: "${ctp}/imageUpload",
+								uploadUrl : "${ctp}/imageUpload"
+							});
+						</script>
+				</td>
 			</tr>
 			<tr>
 				<th>공개여부</th>

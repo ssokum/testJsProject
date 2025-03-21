@@ -16,4 +16,14 @@ public interface BoardService {
 
 	int setBoardInputOk(BoardVo vo);
 
+	int setboardDelete(int idx);
+
+	void imgCheck(String content);
+
+	void imgDelete(String content);
+
+	void imgBackup(String content);
+
+	int setBoardUpdate(BoardVo vo);
+
 }
