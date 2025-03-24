@@ -5,16 +5,29 @@
   <select id="getBoardTotRecCnt" resultType="int">
     select count(*) from board;
   </select>
+  <select id="getBoardTotRecCntSeach" resultType="int">
+    select count(*) from board where ${search} like concat('%', #{searchString},'%') ;
+  </select>
   
   <select id="getBoardList" resultType="com.spring.JspringProject.vo.BoardVo">
-  	select * from board order by idx desc limit #{startIndexNo},#{pageSize};
+  	select *, datediff(wDate, now()) as dateDiff from board <if test='search !=""'>where ${search} like concat('%', #{searchString},'%')</if> order by idx desc limit #{startIndexNo},#{pageSize};
   </select>
   
   <select id="getBoardContent" resultType="com.spring.JspringProject.vo.BoardVo">
   	select * from board where idx = #{idx};
   </select>
   
+  <!-- <![CDATA[조건식]]> -->
+  <select id="getPrevNextSearch" resultType="com.spring.JspringProject.vo.BoardVo">
+  	select idx, title from board where 
+	  	<if test='prevNext == "prev"'><![CDATA[idx < #{idx}]]></if>
+	  	<if test='prevNext != "prev"'><![CDATA[idx > #{idx}]]></if>
+	  	order by idx <if test='prevNext == "prev"'>desc</if> limit 1;
+  </select>
   
+  <select id="getBoardReply" resultType="com.spring.JspringProject.vo.BoardReplyVo">
+  	select * from boardReply where boardIdx = #{idx};
+  </select>
   
   
   
@@ -22,6 +35,9 @@
     insert into board values (default,#{vo.mid},#{vo.nickName},#{vo.title},#{vo.content},#{vo.hostIp},#{vo.openSw},default,default,default,default);
   </insert>
   
+  <insert id="setBoardReplyInput">
+  	insert into boardReply values (default, #{vo.boardIdx}, #{vo.mid}, #{vo.nickName},#{vo.content},#{vo.hostIp},default);
+  </insert>
   
   
   
@@ -31,6 +47,14 @@
   
   <update id="setBoardUpdate">
   	update board set title=#{vo.title}, content=#{vo.content}, hostIp=#{vo.hostIp}, openSw=#{vo.openSw}, wDate=now() where idx =#{vo.idx};
+  </update>
+  
+  <update id="setBoardGoodCheck1" >
+    update board set good = good + 1 where idx = #{idx};
+  </update>
+  
+  <update id="setBoardGoodCheck2" >
+    update board set good = good + #{goodCnt} where idx = #{idx};
   </update>
   
   

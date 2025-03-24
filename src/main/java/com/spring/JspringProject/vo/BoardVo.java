@@ -18,4 +18,7 @@ public class BoardVo {
 	private String wDate;
 	private String good;
 	private String complaint;
+	
+	private int dateDiff;	//게시글 일자 경과 유무 체크
+	private int hourDiff;	//게시글 24시간 경과 유무 체크
 }
