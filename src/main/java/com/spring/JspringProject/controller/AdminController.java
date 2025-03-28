@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.JspringProject.service.AdminService;
 import com.spring.JspringProject.service.MemberService;
+import com.spring.JspringProject.vo.ComplaintVo;
 import com.spring.JspringProject.vo.MemberVo;
 
 @Controller
@@ -80,6 +81,13 @@ public class AdminController {
 		return adminService.setMemberLevelChange(level, idx) + "";
 	}
 	
+	// 선택한 회원 전체적으로 등급 변경하기
+	@ResponseBody
+	@RequestMapping(value = "/member/memberLevelSelectCheck", method = RequestMethod.POST)
+	public String memberLevelSelectCheckPost(String idxSelectArray, int levelSelect) {
+		return adminService.setLevelSelectCheck(idxSelectArray, levelSelect);
+	}
+	
 	// 개별회원정보 상세보기
 	@RequestMapping(value = "/memberInfor/{idx}", method = RequestMethod.GET)
 	public String memberInforGet(Model model, @PathVariable int idx) {
@@ -88,4 +96,59 @@ public class AdminController {
 		
 		return "admin/member/memberInfor";
 	}
+	
+	// 신고 리스트 출력
+	@RequestMapping(value = "/complaint/complaintList", method = RequestMethod.GET)
+	public String complaintListGet(Model model) {
+		List<ComplaintVo> vos = adminService.getComplaintList();
+		model.addAttribute("vos", vos);
+		
+		return "admin/complaint/complaintList";
+	}
+	
+	/*
+	// 신고글 감추기/보이기/
+	@ResponseBody
+	@RequestMapping(value = "/complaint/contentChange", method = RequestMethod.POST)
+	public String contentChangePost(int contentIdx, String contentSw) {
+		return adminService.setContentChange(contentIdx, contentSw) + "";
+	}
+	
+	// 신고글 삭제하기
+	@ResponseBody
+	@RequestMapping(value = "/complaint/contentDelete", method = RequestMethod.POST)
+	public String contentDeletePost(int contentIdx, String part) {
+		return adminService.setContentDelete(contentIdx, part) + "";
+	}
+	*/
+	
+	// 신고글 '보이기/감추기/삭제하기'
+	// 신고 처리하기(신고취소(S)/신고가리기(H)/삭제하기(D))
+	// complaintSw : H(감추기-board테이블의 complaint필드값을 'HI' , complaint테이블의 progress필드값을 '처리완료(H)')
+	// complaintSw : S(보이기-신고해제-board테이블의 complaint필드값을 'NO' , complaint테이블의 progress필드값을 '처리완료(S)')
+	// complaintSw : D(삭제하기-board테이블의 해당레코드 삭제처리 , complaint테이블의 progress필드값을 '처리완료(D)')
+	@ResponseBody
+	@RequestMapping(value = "/complaint/complaintProcess", method = RequestMethod.POST)
+	public String complaintProcessPost(int idx, String part, int partIdx, String complaintSw) {
+		int res = 0;
+		if(complaintSw.equals("D")) {		// 신고글 삭제처리(board테이블의 신고글만 삭제처리한다)
+			res = adminService.setComplaintDelete(partIdx, part);
+			complaintSw = "처리완료(D)";
+		}
+		else {  // complaintSw가 'H'면 board테이블의 complaint필드값을 'HI'로, 'S'면 board테이블의 complaint필드값을 'NO'로 처리한다.
+			if(complaintSw.equals("H"))	{
+				res = adminService.setComplaintProcess(partIdx, "HI");
+				complaintSw = "처리완료(H)";
+			}
+			else {
+				res = adminService.setComplaintProcess(partIdx, "NO");
+				complaintSw = "처리완료(S)";
+			}
+		}
+		
+		if(res != 0) adminService.setComplaintProcessOk(idx, complaintSw);	// 앞의 작업완료후 처리된 결과를 complaint테이블의 progress필드에 complaintSw값으로 처리하기(update) 
+		
+		return res + "";
+	}
+	
 }

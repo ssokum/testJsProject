@@ -50,16 +50,17 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public int setboardDelete(int idx) {
-		return boardDao.setboardDelete(idx);
+	public int setBoardDelete(int idx) {
+		
+		return boardDao.setBoardDelete(idx);
 	}
 
 	@Override
 	public void imgCheck(String content) {
-		//               		  0123456789012345678901234567890123456789012345678901234567890
-		//<p><img alt="" src="/JspringProject/data/ckeditor/250321121640_1920x1080.jpg" style="height:1080px; width:1920px" /></p>
-
-
+		//      0         1         2         3         4         4
+		//      01234567890123456789012345678901234567890123456789012345678
+		// <img src="/JspringProject/data/ckeditor/250321140356_2503.jpg" style="height:854px; width:1280px" />
+		
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/");
 		
@@ -69,8 +70,6 @@ public class BoardServiceImpl implements BoardService {
 		
 		while(sw) {
 			String imgFile = nextImg.substring(0, nextImg.indexOf("\""));
-			
-			System.out.println(imgFile);
 			
 			String origFilePath = realPath + "ckeditor/" + imgFile;
 			String copyFilePath = realPath + "board/" + imgFile;
@@ -82,57 +81,54 @@ public class BoardServiceImpl implements BoardService {
 		}
 	}
 
+	// 파일 복사처리
 	private void fileCopyCheck(String origFilePath, String copyFilePath) {
-		
-	  try {
-		FileInputStream fis =	new FileInputStream(new File(origFilePath));
-		FileOutputStream fos =	new FileOutputStream(new File(copyFilePath));
-		
-		byte[] b = new byte[2048];
-		int cnt = 0;
-		while((cnt = fis.read(b)) != -1) {
-			fos.write(b, 0, cnt);
+		try {
+			FileInputStream fis = new FileInputStream(new File(origFilePath));
+			FileOutputStream fos = new FileOutputStream(new File(copyFilePath));
+			
+			byte[] b = new byte[2048];
+			int cnt = 0;
+			while((cnt = fis.read(b)) != -1) {
+				fos.write(b, 0, cnt);
+			}
+			fos.flush();
+			fos.close();
+			fis.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		
-		fos.flush();
-		fos.close();
-		fis.close();
-		
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-	  
-	  
-	  
-	  
 	}
 
+	// 게시글에 사진포함되어 있을때 사진 삭제하기
 	@Override
 	public void imgDelete(String content) {
-		//      0123456789012345678901234567890123456789012345678901234567890
-		//<p><img src="/JspringProject/data/ckeditor/250321133230_1920x1080.jpg" style="height:1080px; width:1920px" /><img src="/JspringProject/data/ckeditor/250321133230_dao-vi-t-hoang-CY4vS8_eC5E-unsplash.jpg" style="height:4160px; width:6240px" /><img src="/JspringProject/data/ckeditor/250321133230_zoltan-tasi--Qi1aO87fP4-unsplash.jpg" style="height:3235px; width:4852px" /></p>
-
+		//      0         1         2         3         4         4
+		//      01234567890123456789012345678901234567890123456789012345678
+		// <img src="/JspringProject/data/board/250321140356_2503.jpg" style="height:854px; width:1280px" />
+		
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/");
-
-		int position = 35;
+		
+		int position = 32;
 		String nextImg = content.substring(content.indexOf("src=\"/") + position);
 		boolean sw = true;
-
+		
 		while(sw) {
 			String imgFile = nextImg.substring(0, nextImg.indexOf("\""));
-	
+			
 			String origFilePath = realPath + "board/" + imgFile;
-	
+			
 			fileDelete(origFilePath);
-	
+			
 			if(nextImg.indexOf("src=\"/") == -1) sw = false;
 			else nextImg = nextImg.substring(nextImg.indexOf("src=\"/") + position);
 		}
 	}
 
+	// 파일 삭제처리
 	private void fileDelete(String origFilePath) {
 		File delFile = new File(origFilePath);
 		if(delFile.exists()) delFile.delete();
@@ -140,27 +136,26 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public void imgBackup(String content) {
-		//		  0123456789012345678901234567890123456789012345678901234567890
-		//<p><img alt="" src="/JspringProject/data/ckeditor/250321121640_1920x1080.jpg" style="height:1080px; width:1920px" /></p>
-
-
+		//      0         1         2         3         4         4
+		//      01234567890123456789012345678901234567890123456789012345678
+		// <img src="/JspringProject/data/board/250321140356_2503.jpg" style="height:854px; width:1280px" />
+		// <img src="/JspringProject/data/ckeditor/250321140356_2503.jpg" style="height:854px; width:1280px" />
+		
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/");
-
+		
 		int position = 32;
 		String nextImg = content.substring(content.indexOf("src=\"/") + position);
 		boolean sw = true;
-
+		
 		while(sw) {
 			String imgFile = nextImg.substring(0, nextImg.indexOf("\""));
-
-			System.out.println(imgFile);
-
+			
 			String origFilePath = realPath + "board/" + imgFile;
 			String copyFilePath = realPath + "ckeditor/" + imgFile;
-
+			
 			fileCopyCheck(origFilePath, copyFilePath);
-
+			
 			if(nextImg.indexOf("src=\"/") == -1) sw = false;
 			else nextImg = nextImg.substring(nextImg.indexOf("src=\"/") + position);
 		}
@@ -182,8 +177,8 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public BoardVo getPrevNextSearch(int idx, String prevNext) {
-		return boardDao.getPrevNextSearch(idx, prevNext);
+	public BoardVo getPreNextSearch(int idx, String preNext) {
+		return boardDao.getPreNextSearch(idx, preNext);
 	}
 
 	@Override
@@ -194,6 +189,16 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public int setBoardReplyInput(BoardReplyVo vo) {
 		return boardDao.setBoardReplyInput(vo);
+	}
+
+	@Override
+	public int setBoardReplyDelete(int idx) {
+		return boardDao.setBoardReplyDelete(idx);
+	}
+
+	@Override
+	public int setBoardReplyUpdateCheckOk(BoardReplyVo vo) {
+		return boardDao.setBoardReplyUpdateCheckOk(vo);
 	}
 
 	

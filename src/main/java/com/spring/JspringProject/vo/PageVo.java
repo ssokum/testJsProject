@@ -1,12 +1,8 @@
 package com.spring.JspringProject.vo;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@Setter
-@ToString
+@Data
 public class PageVo {
 	private int pag;
 	private int pageSize;
@@ -21,4 +17,5 @@ public class PageVo {
 	private String searchStr;
 	private String searchString;
 	private String part;
+
 }

@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.JspringProject.dao.BoardDao;
+import com.spring.JspringProject.dao.PdsDao;
 import com.spring.JspringProject.vo.PageVo;
 
 @Service
-public class PageNavigation {
+public class Pagination {
+	
 	@Autowired
 	BoardDao boardDao;
+	
+	@Autowired
+	PdsDao pdsDao;
 
 	public PageVo getTotRecCnt(int pag, int pageSize, String section, String part, String searchString) {
 		PageVo vo = new PageVo();
@@ -18,34 +23,28 @@ public class PageNavigation {
 		String search = "";
 		String searchStr = "";
 		
-		// 검색어가 넘어왔을 경우 처리하는 부분
-//		String search = "";
-//		if(!searchString.equals("/")) {
+//		검색어가 넘어왔을경우 처리하는 부분
+//		if(!searchString.equals("/")) {	// searchString : 'title/공지'
 //			search = searchString.split("/")[0];
 //			searchString = searchString.split("/")[1];
 //		}
 		
 		if(section.equals("board")) {
-			if(part.equals(""))	totRecCnt = boardDao.getBoardTotRecCnt();
-			else {
-				totRecCnt = boardDao.getBoardTotRecCntSeach(part, searchString);
-			}
+			if(part.equals("")) totRecCnt = boardDao.getBoardTotRecCnt();
+			else totRecCnt = boardDao.getBoardTotRecCntSearch(part, searchString);
 		}
 		else if(section.equals("pds")) {
-			
+			totRecCnt = pdsDao.getPdsTotRecCnt(part);
 		}
 		
-		// 검색기(search(part)와 searchString)를 통한 리스트를 구현하기 위한 처리
-		if(!part.equals("")) {
+		// 검색기(search(part)와 searchString)를 통한 리스트를 구현하기위한 처리
+		if(!searchString.equals("")) {
 			search = part;
 			if(totRecCnt != 0) pageSize = totRecCnt;
-		
 			if(part.equals("title")) searchStr = "글제목";
-			else if(part.equals("nickName")) searchStr = "닉네임 ";
-			else if(part.equals("content")) searchStr = "글내용";
+			else if(part.equals("nickName")) searchStr = "닉네임";
+			else searchStr = "글내용";
 		}
-		System.out.println("pageSize: " + pageSize);
-		System.out.println("totRecCnt: " + totRecCnt);
 		
 		int totPage = (totRecCnt % pageSize) == 0 ? (totRecCnt / pageSize) : (totRecCnt / pageSize) + 1;
 		int startIndexNo = (pag - 1) * pageSize;
@@ -72,4 +71,5 @@ public class PageNavigation {
 	}
 	
 	
-}	
+	
+}

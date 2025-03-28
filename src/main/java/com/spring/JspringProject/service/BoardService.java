@@ -17,7 +17,7 @@ public interface BoardService {
 
 	int setBoardInputOk(BoardVo vo);
 
-	int setboardDelete(int idx);
+	int setBoardDelete(int idx);
 
 	void imgCheck(String content);
 
@@ -31,10 +31,14 @@ public interface BoardService {
 
 	int setBoardGoodCheck2(int idx, int goodCnt);
 
-	BoardVo getPrevNextSearch(int idx, String prevNext);
+	BoardVo getPreNextSearch(int idx, String preNext);
 
 	List<BoardReplyVo> getBoardReply(int idx);
 
 	int setBoardReplyInput(BoardReplyVo vo);
+
+	int setBoardReplyDelete(int idx);
+
+	int setBoardReplyUpdateCheckOk(BoardReplyVo vo);
 
 }

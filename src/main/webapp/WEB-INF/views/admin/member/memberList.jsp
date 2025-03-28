@@ -56,6 +56,66 @@
     	$("#myModal1 .modal-body .mid").html(mid);
     	$("#myModal1 .modal-body .imgSrc").attr("src","${ctp}/resources/data/member/"+photo)
     }
+    
+    // 전체선택
+    function allCheck() {
+      for(let i=0; i<myform.idxFlag.length; i++) {
+        myform.idxFlag[i].checked = true;
+      }
+    }
+
+    // 전체취소
+    function allReset() {
+      for(let i=0; i<myform.idxFlag.length; i++) {
+        myform.idxFlag[i].checked = false;
+      }
+    }
+
+    // 선택반전
+    function reverseCheck() {
+      for(let i=0; i<myform.idxFlag.length; i++) {
+        myform.idxFlag[i].checked = !myform.idxFlag[i].checked;
+      }
+    }
+    
+    // 여러개 선택항목 등급변경처리
+    function levelSelectCheck() {
+    	let select = document.getElementById("levelSelect");
+    	let levelSelectText = select.options[select.selectedIndex].text;
+    	let levelSelect = select.options[select.selectedIndex].value;
+    	let idxSelectArray = '';
+    	
+      for(let i=0; i<myform.idxFlag.length; i++) {
+        if(myform.idxFlag[i].checked) idxSelectArray += myform.idxFlag[i].value + "/";
+      }
+    	if(idxSelectArray == '') {
+    		alert("등급을 변경할 항목을 1개 이상 선택하세요");
+    		return false;
+    	}
+    	
+    	let ans = confirm("선택한 항목의 등급을 "+levelSelectText+"등급으로 변경하시겠습니까?");
+    	if(!ans) return false;
+    	
+      idxSelectArray = idxSelectArray.substring(0,idxSelectArray.lastIndexOf("/"));
+      let query = {
+    		  idxSelectArray : idxSelectArray,
+    		  levelSelect : levelSelect
+      }
+      
+      $.ajax({
+    	  url  : "${ctp}/admin/member/memberLevelSelectCheck",
+    	  type : "post",
+    	  data : query,
+    	  success:function(res) {
+    		  if(res != "0") alert("선택한 항목들이 "+levelSelectText+"(으)로 변경되었습니다.");
+    		  else alert("등급변경 실패~");
+  			  location.reload();
+    	  },
+    	  error : function() {
+    		  alert("전송 실패~~");
+    	  }
+      });
+    }
   </script>
   <style>
     a {text-decoration: none}
@@ -68,10 +128,24 @@
 <body>
 <p><br/></p>
 <div class="container">
-  <h2 class="text-center">전체 회원 리스트</h2>
-  <div class="row">
-    <div class="col text-end mb-2">
-      <select name="levelItem" id="levelItem" onchange="levelItemCheck()">
+  <h2 class="text-center mb-4">전체 회원 리스트</h2>
+  <div class="row mb-1">
+    <div class="col-7">
+	    <div class="input-group">
+	      <input type="button" value="전체선택" onclick="allCheck()" class="btn btn-success btn-sm"/>
+	      <input type="button" value="전체취소" onclick="allReset()" class="btn btn-primary btn-sm"/>
+	      <input type="button" value="선택반전" onclick="reverseCheck()" class="btn btn-info btn-sm me-2"/>
+	      <select name="levelSelect" id="levelSelect" class="form-select form-select-sm">
+	        <option value="2">정회원</option>
+	        <option value="3">준회원</option>
+	        <option value="1">우수회원</option>
+	      </select>
+	      <input type="button" value="선택항목등급변경" onclick="levelSelectCheck()" class="btn btn-warning btn-sm" />
+	    </div>
+    </div>
+    <div class="col-2"></div>
+    <div class="col-3 text-end">
+      <select name="levelItem" id="levelItem" onchange="levelItemCheck()" class="form-select form-select-sm">
         <option value="99"  ${level == 99  ? 'selected' : ''}>전체보기</option>
         <option value="1"   ${level == 1   ? 'selected' : ''}>우수회원</option>
         <option value="2"   ${level == 2   ? 'selected' : ''}>정회원</option>
@@ -97,7 +171,11 @@
       </tr>
       <c:forEach var="vo" items="${vos}" varStatus="st">
         <tr>
-          <td>${vo.idx}</td>
+          <td>
+            <c:if test="${vo.level != 0}"><input type="checkbox" name="idxFlag" id="idxFlag${vo.idx}" value="${vo.idx}"/></c:if>
+	          <c:if test="${vo.level == 0}"><input type="checkbox" name="idxFlag" id="idxFlag${vo.idx}" value="${vo.idx}" disabled /></c:if>
+	          ${vo.idx}
+          </td>
           <td><a href="${ctp}/admin/memberInfor/${vo.idx}" title="회원정보 상세보기">${vo.mid}</a></td>
           <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal1">Open modal 1</button> -->
           <td><a href="#" onclick="imgInfor('${vo.nickName}','${vo.mid}','${vo.photo}')" data-bs-toggle="modal" data-bs-target="#myModal1">${vo.nickName}</a></td>
@@ -111,7 +189,7 @@
           	<c:if test="${vo.userDel == 'OK'}">(<font color="blue"><b>${vo.deleteDiff}</b></font>)</c:if>
           </td>
           <td>
-            <select name="level" id="level" onchange="levelChange(this)">
+            <select name="level" id="level" onchange="levelChange(this)" class="form-select form-select-sm">
               <option value="1/${vo.idx}"   ${vo.level == 1 ? 'selected' : ''}>우수회원</option>
               <option value="2/${vo.idx}"   ${vo.level == 2 ? 'selected' : ''}>정회원</option>
               <option value="3/${vo.idx}"   ${vo.level == 3 ? 'selected' : ''}>준회원</option>

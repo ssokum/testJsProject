@@ -26,8 +26,8 @@
 	    <div id="one">
 	      <div class="card-body">
 		      <div><a href="${ctp}/guest/guestList" target="adminContent">방명록리스트</a></div>
-		      <div><a href="">게시판리스트</a></div>
-		      <div><a href="">자료실리스트</a></div>
+		      <div><a href="${ctp}/admin/board/boardList">게시판리스트</a></div>
+		      <div><a href="${ctp}/admin/pds/pdsList">자료실리스트</a></div>
 	      </div>
 	    </div>
   	</div>
@@ -38,7 +38,18 @@
 	    <div id="two">
 	    	<div class="card-body">
 		      <div><a href="${ctp}/admin/member/memberList" target="adminContent">회원리스트</a></div>
-		      <div><a href="">신고리스트</a></div>
+		      <%-- <div><a href="${ctp}/admin/complaint/complaintList" target="adminContent">신고리스트</a></div> --%>
+	      </div>
+	    </div>
+    </div>
+  </div>
+  <div id="accordion">
+    <div class="card m-1">
+    	<div class="card-header p-0"><a href="#three" class="btn" data-bs-toggle="collapse">신고글관리</a></div>
+	    <div id="three">
+	    	<div class="card-body">
+		      <div><a href="${ctp}/admin/complaint/complaintList" target="adminContent">신고리스트</a></div>
+		      <div><a href="${ctp}/admin/complaint/complaintSolve" target="adminContent">처리완료리스트</a></div>
 	      </div>
 	    </div>
     </div>

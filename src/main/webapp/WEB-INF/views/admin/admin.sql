@@ -70,3 +70,32 @@ select date_format(wDate, '%Y-%m-%d %W') from board; /* %W : 요일(영어로) *
 select date_format(wDate, '%Y-%M-%d') from board; /* %M : 월이 영어로 */
 select date_format(wDate, '%Y-%m-%d %p %h:%i') from board; /* %p : AM/PM, %h:12시간제 */
 select date_format(wDate, '%Y-%m-%d %H:%i') from board;	/* %H : 24시간제 */
+select date_format(wDate, '%Y-%m-%d %H:%i:%s') from board;	/* %s : 초 */
+
+/* 리뷰 테이블 */
+create table review (
+  idx  int not null auto_increment,	/* 리뷰 고유번유 */
+  part varchar(10) not null,				/* 분야(board, pds,.....) */
+  partIdx int not null,							/* 해당분야의 고유번유 */
+  mid		varchar(20) not null,
+  nickName varchar(20) not null,
+  star     int not null default 0,	/* 별점 부여 점수 */
+  content  text,										/* 리뷰 내용 */
+	rDate		 datetime default now(),	/* 리뷰 등록날짜 */
+	primary key(idx),
+	foreign key(mid) references member(mid)
+);
+
+/* 리뷰에 댓글 달기 */
+create table reviewReply(
+  replyIdx  int not null auto_increment,	/* 댓글 고유번호 */
+  reviewPart varchar(10) not null,		/* 분야(board, pds, .....) */
+  reviewIdx int not null,						/* 원본글(부모글:리뷰)의 고유번호 */
+  replyMid  varchar(20) not null,
+  replyNickName varchar(20) not null,
+  replyRDate	 datetime default now(),/* 댓글 올린 날짜 */
+  replyContent text not null,					/* 댓글 내용 */
+  primary key(replyIdx),
+  foreign key(reviewIdx) references review(idx),
+  foreign key(replyMid) references member(mid)
+);
